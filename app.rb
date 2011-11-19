@@ -17,8 +17,8 @@ get '/search.json/:query' do
   Dir.glob(File.dirname(__FILE__) + "/text/*.txt").each_with_index { |f,i| 
     str = IO.readlines(f).to_s
     page =  /[0-9].+/.match(f).to_s.split("_").last().split(".").first()
-    words = str.split(" ")
-    if (words.include? query)
+    words = str.gsub(".","").downcase.split(" ")
+    if (words.include? query.downcase)
     #if(/#{query}/i.match(str))
       results << page.to_i
     end
