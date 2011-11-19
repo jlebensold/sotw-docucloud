@@ -4,14 +4,23 @@ set :server, :thin
 set :public_folder, File.dirname(__FILE__) + '/public'
 
 
-require 'net/http'
-require 'uri'
-
+require 'pp'
 
 get '/text/*.txt' do  | file |
-  url = "http://s3.amazonaws.com/docucloud/pages/text/#{file}.txt"
-  resp = Net::HTTP.get_response URI.parse(url)
-  resp.body
+  path = File.dirname(__FILE__) +"/text/#{file}.txt"
+  IO.readlines(path)
+end
+get '/search.json/:query' do
+  content_type 'application/json'
+  results = []
+  query = params[:query].to_s
+  Dir.glob(File.dirname(__FILE__) + "/text/*.txt").each_with_index { |f,i| 
+    str = IO.readlines(f).to_s
+    if(/#{query}/i.match(str))
+      results << i+1
+    end
+  }
+  "{\"results\" : #{results},\"query\": \"#{query}\"}"
 end
 
 get '/cfg.json' do
