@@ -16,8 +16,9 @@ get '/search.json/:query' do
   query = params[:query].to_s
   Dir.glob(File.dirname(__FILE__) + "/text/*.txt").each_with_index { |f,i| 
     str = IO.readlines(f).to_s
+    page =  /[0-9].+/.match(f).to_s.split("_").last().split(".").first()
     if(/#{query}/i.match(str))
-      results << i+1
+      results << page.to_i
     end
   }
   "{\"results\" : #{results},\"query\": \"#{query}\"}"
